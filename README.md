@@ -19,4 +19,4 @@ To get a stock historical price data in a given period of time
 GET http://url.com/stocks/{symbol}.{yyyy-MM-dd}.{yyyy-MM-dd}  
 ```
 
-Buy me a coffee ☕: https://paypal.me/imacky  
+Support this project ☕: https://paypal.me/imacky  
