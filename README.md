@@ -69,4 +69,11 @@ https://psestocksapi.herokuapp.com/stock/quote?symbol=CEB&startDate=2022-08-05&e
     }
   ]
 }
-```
+``` 
+<br>
+<p align="center">
+	<a href="https://www.paypal.com/paypalme/imacky"><img width="185" src="https://raw.githubusercontent.com/k4m4/donations/master/images/badge.svg" alt="Badge"></a>
+	<br><br>
+	<b>🙌 Send <a href="https://www.paypal.com/paypalme/imacky">donations</a> to help support this <b>project!</b> 🙌</b>
+</p>
+<br>
