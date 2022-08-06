@@ -73,8 +73,8 @@ const updatePrices = async() => {
     for (let start = 0; start <= totalStocks; start+= limit) { 
         const stocks = (await getStocksFromServer(limit, start))?.data;
         let values = []; 
-        const startDate = '08-01-2022';//dateFormat(new Date(), false, true);   
-        const endDate ='08-01-2022';// dateFormat(new Date(), false, true);
+        const startDate = dateFormat(new Date(), false, true);   
+        const endDate = dateFormat(new Date(), false, true);
         for (stock of stocks) {
             const price = await getPrice(stock.companyId, stock.securityId, startDate,endDate).then(await wait(500));
             //const profile = await getCompanyProfile(stock.companyId, stock.securityId);   
