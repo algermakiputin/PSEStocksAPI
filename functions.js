@@ -1,7 +1,7 @@
 require('dotenv').config();
 const jsdom = require('jsdom');
 const axios = require('axios');
-const mysql = require('./DBConnect');
+//const mysql = require('./DBConnect');
 
 const url = process.env.liveURL; 
 const pricesURL = process.env.pricesURL; 
