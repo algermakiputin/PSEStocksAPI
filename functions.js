@@ -9,6 +9,15 @@ const profileURL = process.env.profileURL;
 const apiURL = process.env.apiURL;
 const quoteURL = process.env.quoteURL;
 
+async function fetchAPI(url) {
+    return await axios.get(url).then(result => {
+        return result.data;
+    }).catch(error => {
+        console.log(error);
+        return {error: 'Internal server error'};
+    })
+}
+
 const getCompanyProfile = async(companyId, securityId) => {
     const url = `${profileURL}?cmpy_id=${companyId}&security_id=${securityId}`;
     return await axios.get(url).then(result => {
@@ -42,11 +51,7 @@ function dateFormat(string, dayFirst = false) {
     const year = date.getFullYear();
     const month = padStart(date.getMonth() + 1);
     const day = padStart(date.getDate());
-
-    if ( dayFirst ) return `${day}-${month}-${year}`;
-
-    return `${year}-${month}-${day}`;
-
+    return dayFirst? `${day}-${month}-${year}` : `${year}-${month}-${day}`;
 } 
 
 const updatePrices = async() => { 
@@ -56,9 +61,7 @@ const updatePrices = async() => {
     for (let start = 0; start < totalStocks; start+= limit) {
         const query = `SELECT * FROM stocks LIMIT ${start}, ${limit}`;  
         const stocks = await fetch(query);
-        let values = [];
-        const date = new Date();
-        const month = padStart(date.getMonth() + 1);
+        let values = []; 
         const startDate = dateFormat(new Date(), true);   
         const endDate = dateFormat(new Date(), true);  
         for (stock of stocks) { 
@@ -80,14 +83,11 @@ const updatePrices = async() => {
                     ]); 
                 })
             } 
-        }  
-        
-        return false;
+        }   
         if (values.length) {
             const query = 'INSERT INTO prices(symbol, open, close, date, high, low, volume, stockId) VALUES ?';
             mysql.conn.query(query, [values], async function(error, result) {
-                if (error) throw error;
-
+                if (error) throw error; 
                 console.log('data inserted successfully');
                 await wait(4000);
             })
@@ -150,20 +150,16 @@ async function scrapeCompanies(pageNo) {
                     companyId,
                     securityId,
                 })    
-            })
-
+            }) 
             return data;
-        }
-
-        return [];
-
+        } 
+        return []; 
     }).catch(err => {
         console.log(err)
     })
 }
 
-async function getPrice(companyId, securityId, startDate, endDate) { 
-    
+async function getPrice(companyId, securityId, startDate, endDate) {  
     return await axios.post(pricesURL, {
         cmpy_id: companyId,
         security_id: securityId,
@@ -176,17 +172,14 @@ async function getPrice(companyId, securityId, startDate, endDate) {
     })
 } 
 
-async function storeCompanies() {
-
+async function storeCompanies() { 
     const companies = await getCompanies(1); 
     const query = "INSERT INTO stocks(name, symbol, sector, listingDate, companyId, securityId) VALUES ?";
-    const values = []; 
- 
+    const values = [];  
     if (companies.length) {
         companies.forEach((company) => {
             values.push([company.name, company.symbol, company.sector, company.listingDate, company.companyId, company.securityId]);
-        }); 
-
+        });  
         if (values.length) {
             mysql.conn.query(query, [values], function(error, result) {
                 if (error) throw error;
@@ -231,8 +224,7 @@ async function getPrices(symbol, startDate, endDate) {
                 stock.id
             ]);
         });  
-    }
-
+    } 
     return values;
 }
 
@@ -257,8 +249,16 @@ function padStart(value) {
     return value.toString().padStart(2,0)
 }
 
+function validateDate(str) {
+    const regEx = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+    return regEx.test(str);
+}
+
 module.exports = { 
     getCompanyProfile,
     updatePrices,
     updatePriceVolume,
+    fetchAPI,
+    wait,
+    validateDate,
 };
