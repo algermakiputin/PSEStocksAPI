@@ -32,7 +32,7 @@ https://psestocksapi.herokuapp.com/stocks
   ]
 }
 ```
-## Request - Get list of publicly traded companies of PSE
+## Request
 `GET /stock/{symbol}` Get company details by symbol
 ```URL
 https://psestocksapi.herokuapp.com/stock/DITO
