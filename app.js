@@ -35,12 +35,6 @@ app.get('/stock/:symbol', async(req, res) => {
         const response = await fetchAPI(url);
         res.send(response);
     });
-});
-
-app.get('/', async(req, res) => {
-    const request = await updatePrices();
-    console.log(request);
-    res.json(request);
-});
+}); 
 
 app.listen(process.env.PORT);
