@@ -1,5 +1,5 @@
 # PSE Stocks API
-Get Philippines stock exchange publicly traded companies and market historal price. 
+Get Philippines stock exchange publicly traded companies and market historical price. 
 ## Request
 `GET /stocks`  Get publicly traded companies of PSE
 ```URL
