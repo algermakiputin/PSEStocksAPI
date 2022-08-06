@@ -1,9 +1,9 @@
 # PSE Stocks API
 Get Philippines stock exchange publicly traded companies and market historical price. 
 ## Request
-`GET /stocks`  Get publicly traded companies of PSE
+`GET /stocks/{$page}`  Get publicly traded companies of PSE
 ```URL
-https://psestocksapi.herokuapp.com/stocks
+https://psestocksapi.herokuapp.com/stocks/1
 ```
 ## Response
 ```JSON
