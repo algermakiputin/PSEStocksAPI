@@ -1,7 +1,7 @@
 require('dotenv').config();
 const jsdom = require('jsdom');
 const axios = require('axios');
-//const mysql = require('./DBConnect');
+const mysql = require('./DBConnect');
 
 const url = process.env.liveURL; 
 const pricesURL = process.env.pricesURL; 
@@ -46,51 +46,60 @@ async function getVolume(symbol, date) {
         })
 }
 
-function dateFormat(string, dayFirst = false) {
+function dateFormat(string, dayFirst = false, api = false) {
     const date = new Date(string);
     const year = date.getFullYear();
     const month = padStart(date.getMonth() + 1);
     const day = padStart(date.getDate());
+
+    if (api) return `${month}-${day}-${year}`;
     return dayFirst? `${day}-${month}-${year}` : `${year}-${month}-${day}`;
 } 
+
+async function getStocksFromServer(limit, offset) {
+    const url = `${process.env.serverURL}/api/stocks?limit=${limit}&offset=${offset}`; 
+    return await axios.get(url).then(result => {
+        return result;
+    }).catch(error => {
+        console.log('failed to fetch stocks');
+        throw error;
+    });
+}
 
 const updatePrices = async() => { 
     const totalStocks = 286;
     const divider = 5;
     const limit = Math.round(totalStocks / divider);   
-    for (let start = 0; start < totalStocks; start+= limit) {
-        const query = `SELECT * FROM stocks LIMIT ${start}, ${limit}`;  
-        const stocks = await fetch(query);
+    for (let start = 0; start <= totalStocks; start+= limit) { 
+        const stocks = (await getStocksFromServer(limit, start))?.data;
         let values = []; 
-        const startDate = dateFormat(new Date(), true);   
-        const endDate = dateFormat(new Date(), true);  
-        for (stock of stocks) { 
-            const price = await getPrice(stock.companyId, stock.securityId, startDate,endDate).then(await wait(300));
-            //const profile = await getCompanyProfile(stock.companyId, stock.securityId);  
-            if (price?.chartData?.length) {
-                price.chartData.forEach(async(value) => { 
-                    const priceInfo = await getVolume(stock.symbol, value.CHART_DATE);  
-                    values.push([
-                        stock.symbol,
-                        value.OPEN || 0,
-                        value.CLOSE || 0, 
-                        dateFormat(value.CHART_DATE),
-                        value.HIGH || 0,
-                        value.LOW || 0,
-                        priceInfo.volume,
-                        value.VALUE || 0,  
-                        stock.id
-                    ]); 
-                })
-            } 
-        }   
-        if (values.length) {
-            const query = 'INSERT INTO prices(symbol, open, close, date, high, low, volume, stockId) VALUES ?';
-            mysql.conn.query(query, [values], async function(error, result) {
-                if (error) throw error; 
-                console.log('data inserted successfully');
-                await wait(4000);
-            })
+        const startDate = '08-01-2022';//dateFormat(new Date(), false, true);   
+        const endDate ='08-01-2022';// dateFormat(new Date(), false, true);
+        for (stock of stocks) {
+            const price = await getPrice(stock.companyId, stock.securityId, startDate,endDate).then(await wait(500));
+            //const profile = await getCompanyProfile(stock.companyId, stock.securityId);   
+            if (price?.chartData?.length) { 
+                const chartData = price.chartData[0];
+                const priceInfo = await getVolume(stock.symbol, chartData.CHART_DATE); 
+                values.push({
+                    symbol: stock.symbol,
+                    open: chartData.OPEN,
+                    close: chartData.CLOSE, 
+                    date: dateFormat(chartData.CHART_DATE),
+                    high: chartData.HIGH,
+                    low: chartData.LOW,
+                    volume: priceInfo.volume,
+                    stockId: stock.id
+                }); 
+            }   
+        }       
+        if (values.length) { 
+            axios.post(`${process.env.serverURL}/prices/update`, values).then(result => {
+                console.log('data addedd successfully');
+            }).catch(error => {
+                console.log('failed to store data');
+                throw error;
+            });
         } 
     }    
 } 

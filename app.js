@@ -4,7 +4,7 @@ const express = require('express');
 const app = express(); 
 require('./scheduler'); 
 const axios = require('axios');
-const { fetchAPI, wait, validateDate } = require('./functions');
+const { fetchAPI, wait, validateDate, updatePrices } = require('./functions');
 const serverURL = process.env.serverURL;
 
 app.get('/stocks/:page?', async (req, res) => {  
@@ -35,6 +35,12 @@ app.get('/stock/:symbol', async(req, res) => {
         const response = await fetchAPI(url);
         res.send(response);
     });
+});
+
+app.get('/', async(req, res) => {
+    const request = await updatePrices();
+    console.log(request);
+    res.json(request);
 });
 
 app.listen(process.env.PORT);
