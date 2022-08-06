@@ -37,6 +37,7 @@ https://psestocksapi.herokuapp.com/stocks
 ```URL
 https://psestocksapi.herokuapp.com/stock/DITO
 ```
+## Response
 ```JSON
 {
   "name": "DITO CME Holdings Corp.",
