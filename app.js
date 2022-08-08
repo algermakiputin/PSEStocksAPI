@@ -37,4 +37,8 @@ app.get('/stock/:symbol', async(req, res) => {
     });
 }); 
 
+app.get('/', (req, res) => {
+    return res.redirect('https://github.com/algermakiputin/PSEStocksAPI');
+})
+
 app.listen(process.env.PORT);
