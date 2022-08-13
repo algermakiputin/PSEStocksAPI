@@ -36,22 +36,18 @@ app.get('/stock/:symbol', async(req, res) => {
     });
 }); 
 
-app.get('/', (req, res) => {
+app.get('/', async(req, res) => {  
     return res.redirect('https://github.com/algermakiputin/PSEStocksAPI');
 })
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT); 
 
-function test() {
-    console.log('cron running');
-}
-
-const priceUpdater = new CronJob(
-    '*/3 * * * * *',
-    test,
+const priceUpdates = new CronJob(
+    '00 00 16 * * 1-5',
+    updatePrices,
     null,
     false,
     'Asia/Manila'
 );
 
-priceUpdater.start();
+priceUpdates.start();
