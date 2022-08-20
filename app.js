@@ -35,10 +35,8 @@ app.get('/stock/:symbol', async(req, res) => {
     });
 }); 
 
-app.get('/', async(req, res) => {  
-    await updatePrices();
-    res.send({success: true});
-    //return res.redirect('https://github.com/algermakiputin/PSEStocksAPI');
+app.get('/', async(req, res) => {    
+    return res.redirect('https://github.com/algermakiputin/PSEStocksAPI');
 })
 
 app.listen(process.env.PORT); 
