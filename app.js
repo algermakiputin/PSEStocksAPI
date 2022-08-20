@@ -1,10 +1,8 @@
 
 require('dotenv').config();
 const express = require('express');
-const app = express(); 
-require('./scheduler'); 
-const axios = require('axios');
-const { fetchAPI, wait, validateDate, updatePrices } = require('./functions');
+const app = express();   
+const { fetchAPI, wait, validateDate } = require('./functions');
 const serverURL = process.env.serverURL;
 
 app.get('/stocks/:page?', async (req, res) => {  
@@ -37,4 +35,8 @@ app.get('/stock/:symbol', async(req, res) => {
     });
 }); 
 
-app.listen(process.env.PORT);
+app.get('/', async(req, res) => {  
+    return res.redirect('https://github.com/algermakiputin/PSEStocksAPI');
+})
+
+app.listen(process.env.PORT); 

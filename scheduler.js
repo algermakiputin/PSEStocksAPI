@@ -1,8 +1,12 @@
-const schedule = require('node-schedule'); 
 const { updatePrices } = require('./functions');
+const { CronJob } = require('cron');
 
-const sched = "00 00 16 * * 1-5"; 
-const job = schedule.scheduleJob(sched, async function() { 
-    await updatePrices();
-});
+const priceUpdates = new CronJob(
+    '00 00 16 * * 1-5',
+    updatePrices,
+    null,
+    false,
+    'Asia/Manila'
+);
 
+priceUpdates.start();
