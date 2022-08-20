@@ -1,2 +1,2 @@
 web: npm start
-worker: npm schedule
+worker: npm run schedule
