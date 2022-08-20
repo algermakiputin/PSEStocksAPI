@@ -2,9 +2,8 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();   
-const { fetchAPI, wait, validateDate, updatePrices } = require('./functions');
+const { fetchAPI, wait, validateDate } = require('./functions');
 const serverURL = process.env.serverURL;
-const { CronJob } = require('cron');
 
 app.get('/stocks/:page?', async (req, res) => {  
     const url = `${serverURL}/stocks/${req.params.page || 1}`; 
@@ -41,13 +40,3 @@ app.get('/', async(req, res) => {
 })
 
 app.listen(process.env.PORT); 
-
-const priceUpdates = new CronJob(
-    '00 00 16 * * 1-5',
-    updatePrices,
-    null,
-    false,
-    'Asia/Manila'
-);
-
-priceUpdates.start();
