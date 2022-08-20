@@ -69,38 +69,39 @@ async function getStocksFromServer(limit, offset) {
 const updatePrices = async() => { 
     const totalStocks = 286;
     const divider = 5;
-    const limit = Math.round(totalStocks / divider);   
-    for (let start = 0; start <= totalStocks; start+= limit) { 
+    const limit = Math.round(totalStocks / divider);    
+    for (let start = 0; start <= totalStocks; start+= limit) {  
         const stocks = (await getStocksFromServer(limit, start))?.data;
         let values = []; 
+        //MM-DD-YEAR
         const startDate = dateFormat(new Date(), false, true);   
         const endDate = dateFormat(new Date(), false, true);
         for (stock of stocks) {
-            const price = await getPrice(stock.companyId, stock.securityId, startDate,endDate).then(await wait(500));
+            const price = await getPrice(stock.companyId, stock.securityId, startDate,endDate).then(await wait(100));
             //const profile = await getCompanyProfile(stock.companyId, stock.securityId);   
             if (price?.chartData?.length) { 
-                const chartData = price.chartData[0];
-                const priceInfo = await getVolume(stock.symbol, chartData.CHART_DATE); 
+                const chartData = price?.chartData[0];
+                const priceInfo = await getVolume(stock.symbol, chartData.CHART_DATE);  
                 values.push({
-                    symbol: stock.symbol,
-                    open: chartData.OPEN,
-                    close: chartData.CLOSE, 
-                    date: dateFormat(chartData.CHART_DATE),
-                    high: chartData.HIGH,
-                    low: chartData.LOW,
-                    volume: priceInfo.volume,
-                    stockId: stock.id
-                }); 
+                    symbol: stock?.symbol || '',
+                    open: chartData?.OPEN || '',
+                    close: chartData?.CLOSE || '', 
+                    date: dateFormat(chartData.CHART_DATE) || '',
+                    high: chartData?.HIGH || '',
+                    low: chartData?.LOW || '',
+                    volume: priceInfo?.volume || '',
+                    stockId: stock?.id || ''
+                });  
             }   
-        }       
-        if (values.length) { 
+        }      
+        if (values.length) {  
             axios.post(`${process.env.serverURL}/prices/update`, values).then(result => {
                 console.log('data addedd successfully');
             }).catch(error => {
                 console.log('failed to store data');
                 throw error;
             });
-        } 
+        }    
     }    
 } 
 
